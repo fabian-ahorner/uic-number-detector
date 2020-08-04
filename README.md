@@ -1,48 +1,13 @@
-User interfaces {#sec:ui}
-===============
+This is the source code written for my [master thesis](./doc/thesis.pdf): 
 
-UIC Annotation tool {#sec:ui_annotation}
--------------------
-
-![GUI of the UIC annotation tool](img/ui/annotator.png "fig:")
-[fig:ui~a~nnotator]
-
-This utility tool was developed to annotate images with their
-corresponding UIC numbers and to export the annotated information as a
-dataset in a readable format to the UIC detection program. The program
-was developed in Java. The annotation tool can be seen in figure
-[fig:ui~a~nnotator]. To annotate raw images they have to be moved into
-the “to\_import” project directory. Once opened, the program will scan
-the directory and display the first entry in the top left panel of the
-displayed window. To create multiple cropped versions of the same image
-with the UIC number taking up more and more space, the user has to mark
-the area of the train wagon, the UIC number and all digit groups.
-Thereby marking the train wagon shows the marked area in the bottom left
-panel which allows a easier selection of the UIC number. Thereby the
-number does not have to be selected perfectly as its exact bounding box
-can be calculated from the combined bounding box of the digit group.
-Next the image of the UIC number is shown in the top right panel where
-the user can mark every individual digit group. It was decided to only
-mark digit groups to reduce the time required for the annotation process
-in contrast to annotating every digit separately. Knowing the number of
-digits in each line, the groups can automatically be split into
-individual digits.\
-Once the UIC number rectangle was selected, the zoomed in version can
-also be used to identify the digits and write them into the first text
-field in the bottom left panel. Finally the user can enter a subjective
-quality measure in between 1-5 into the second text field (1
-corresponding to a high quality). Once the annotation is completed, the
-user can save the information by pressing enter. To avoid annotation
-mistakes while typing the UIC number, the program uses the check digit
-to verify the number. If the information is correct the program shows
-the next image to import, otherwise it keeps showing the same image. If
-all images from the “to\_import” folder were annotated, the program
-shows the complete dataset with the previous annotations. The left and
-right key can be used to navigate through the images and alterations can
-be saved with the enter key.
-
-UIC detector CLI {#sec:ui_uic}
+Usage
 ----------------
+
+Build and run docker file (No UI)
+```
+docker build --tag uic-detector .
+docker run uic-detector
+```
 
 The finished program provides a command line interface that can be used
 to process a single image or to test a UIC detector on a specified
@@ -84,17 +49,17 @@ further configured with the following options:
     images are shown after processing an input (Figure [fig:ui~c~li]):
 
     [b]<span>0.49</span> ![Original image shown with the use of an
-    annotated dataset](img/ui/original.png "fig:")
+    annotated dataset](doc/original.png "fig:")
     [fig:ui~c~li~o~riginal]
 
     [b]<span>0.49</span> ![The extracted UIC
-    number](img/ui/uic.png "fig:") [fig:ui~c~li~u~ic]
+    number](doc/uic.png "fig:") [fig:ui~c~li~u~ic]
 
     [b]<span>0.49</span> ![Outline of all digits in the extracted UIC
-    number](img/ui/outline.png "fig:") [fig:ui~c~li~o~utline]
+    number](doc/outline.png "fig:") [fig:ui~c~li~o~utline]
 
     [b]<span>0.49</span> ![All characters part of the extracted UIC
-    number](img/ui/chars.png "fig:") [fig:ui~c~li~c~hars]
+    number](doc/chars.png "fig:") [fig:ui~c~li~c~hars]
 
     [fig:ui~c~li]
 
@@ -156,7 +121,48 @@ are:
 
 -   **digits** …Contains only the bounding box of the UIC number
 
-[lst:ui~e~val~r~esult]
+```
+0.00% :   0 218024572776_1 -> Overlap: 96.51% Edit Distance: 3
+0.34% :   1 218024572776_2 -> Overlap: 95.23% Edit Distance: 1
+0.68% :   2 218024574905_1 -> Overlap: 98.97% Edit Distance: 7
+...
+98.97% : 289 378053771747_2 -> Overlap: 99.10% Edit Distance: 0
+99.32% : 290 378053771887_1 -> Overlap: 96.66% Edit Distance: 2
+99.66% : 291 838027450652_1 -> Overlap: 0.00% Edit Distance: -1
+
+Detector: FasTextDetector1C -> CustomLineDetector >> Channels -> SimpleUicDetector >> Scale Pyramid
+Total Time: 61440
+Mean Time: 210
+48105 	 FasTextDetector1C
+10883 	 TesseractSingleCharClassifier
+ 1829 	 FasTextDetector1C -> CustomLineDetector
+   16 	 FasTextDetector1C -> CustomLineDetector >> Channels -> SimpleUicDetector
+
+   Overlap	        Cnt	          %
+      <30%	         31	     10.62%
+      >30%	          3	      1.03%
+      >50%	        258	     88.36%
+
+EditDistance	       Cnt.	        %	  Cumulated
+         0	         40	     13.70%	     13.70%
+         1	         35	     11.99%	     25.68%
+         2	         52	     17.81%	     43.49%
+         3	         45	     15.41%	     58.90%
+         4	         26	      8.90%	     67.81%
+         5	         22	      7.53%	     75.34%
+         6	          7	      2.40%	     77.74%
+         7	          8	      2.74%	     80.48%
+         8	         10	      3.42%	     83.90%
+         9	         11	      3.77%	     87.67%
+        10	          4	      1.37%	     89.04%
+        11	          1	      0.34%	     89.38%
+        12	          0	      0.00%	     89.38%
+         -	         31	         -%	     10.62%
+Area:     67.89%
+CriticalErrors:          1  	      0.34%
+Avg (overlapping only): 3.12644
+Avg (all): 4.06849
+```
 
 When the dataset is evaluated the current process is shown on the
 command line. An example of this can be seen on line 1-7 in listing
